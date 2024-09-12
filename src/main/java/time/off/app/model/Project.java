@@ -28,4 +28,7 @@ public class Project extends  SuperEntity{
 
     @OneToMany(mappedBy = "project")
     private List<Line> lines;
+
+
+
 }
