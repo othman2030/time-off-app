@@ -4,16 +4,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import time.off.app.dto.EmployeeDTO;
+import time.off.app.exception.EmployeeNotFoundException;
 import time.off.app.service.EmployeeService;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @Tag(name = "Employee Service", description = "Handle employees")
 public class EmployeeController {
@@ -50,7 +53,10 @@ public class EmployeeController {
 
         EmployeeDTO employeeDTO = employeeService.findEmployeeByMatricule(matricule);
         if (employeeDTO == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book with matricule " + matricule + " Does not exist");
+            throw new EmployeeNotFoundException("Employee with matricule " + matricule + " does not exist");
+        }else
+        {
+            log.info("Service return employee: " +employeeDTO.toString());
         }
 
         return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
@@ -60,7 +66,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "SUCCESS"),
             @ApiResponse(responseCode = "500", description = "ERROR")
     })
-    @RequestMapping(value = "employee/all", produces = "application/json")
+    @RequestMapping(value = "employee/all", produces = "application/json",method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<EmployeeDTO>> retrieveAllEmployees()
     {
